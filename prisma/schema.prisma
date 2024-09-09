@@ -1,14 +1,117 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
+}
+
+generator typegraphql {
+  provider = "typegraphql-prisma"
+  output   = "../prisma/generated/type-graphql"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CUSTOMER
+  RESTAURANT_OWNER
+  DELIVERY_PERSON
+}
+
+model User {
+  id            String   @id @default(cuid())
+  fullname      String
+  email         String   @unique
+  mobileNumber  String   @unique
+  password      String
+  dateOfBirth   DateTime
+  role          UserRole @default(CUSTOMER)
+  address       String?
+  otp           String? // For Forgot Password 4-digit OTP
+  otpExpires    DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  restaurants   Restaurant[] // Restaurant owners may have multiple restaurants
+  orders        Order[]      // Users can place many orders
+  carts         Cart[]       // Users can have multiple carts
+  deliveries    Delivery[]   // Users assigned to multiple deliveries (if delivery person)
+}
+
+model Restaurant {
+  id          String     @id @default(cuid())
+  name        String
+  location    String
+  menuItems   MenuItem[] // Restaurant has multiple menu items
+  operatingHours String
+  ownerId     String     // User (Restaurant Owner)
+  owner       User       @relation(fields: [ownerId], references: [id])
+
+  // Relations
+  orders      Order[]    // Restaurant can have many orders
+}
+
+model MenuItem {
+  id          String      @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  category    String
+  restaurant  Restaurant  @relation(fields: [restaurantId], references: [id])
+  restaurantId String
+
+  // Inverse relations
+  orderItems  OrderItem[] // MenuItem can be part of multiple OrderItems
+  cartItems   CartItem[]  // MenuItem can be part of multiple CartItems
+}
+
+model Order {
+  id          String     @id @default(cuid())
+  totalPrice  Float
+  status      String     @default("pending") // Options: pending, in-progress, delivered
+  userId      String
+  user        User       @relation(fields: [userId], references: [id])
+  restaurantId String
+  restaurant  Restaurant @relation(fields: [restaurantId], references: [id])
+
+  // Order items relation
+  orderItems  OrderItem[]
+  delivery    Delivery?
+  createdAt   DateTime   @default(now())
+}
+
+model OrderItem {
+  id          String     @id @default(cuid())
+  orderId     String
+  order       Order      @relation(fields: [orderId], references: [id])
+  menuItemId  String
+  menuItem    MenuItem   @relation(fields: [menuItemId], references: [id])
+  quantity    Int
+}
+
+model Delivery {
+  id              String   @id @default(cuid())
+  deliveryPersonId String   // Delivery Person (User)
+  deliveryPerson   User     @relation(fields: [deliveryPersonId], references: [id])
+  orderId         String   @unique
+  order           Order    @relation(fields: [orderId], references: [id])
+  status          String   @default("assigned") // Options: assigned, in-transit, delivered
+  deliveryTime    DateTime
+}
+
+model Cart {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  cartItems CartItem[]
+}
+
+model CartItem {
+  id          String   @id @default(cuid())
+  cartId      String
+  cart        Cart     @relation(fields: [cartId], references: [id])
+  menuItemId  String
+  menuItem    MenuItem @relation(fields: [menuItemId], references: [id])
+  quantity    Int
 }
