@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
-import { GraphQLContext } from "../../types/types";
+import { GraphQLContext, UserRole } from "../../types/types";
 import { emailForgotPassword } from "../../libs/email/emailForgotPassword";
 import { GraphQLError } from "graphql";
 import { verifyToken } from "../../utils/authorization";
@@ -24,6 +24,7 @@ export class AuthResolver {
     @Arg("dateOfBirth") dateOfBirth: Date,
     @Arg("email") email: string,
     @Arg("mobileNumber") mobileNumber: string,
+    @Arg("role", { defaultValue: UserRole.CUSTOMER }) userRole: UserRole,
     @Ctx() { prisma }: GraphQLContext
   ): Promise<string> {
     try {
@@ -31,6 +32,18 @@ export class AuthResolver {
         ![fullname, password, dateOfBirth, email, mobileNumber].every(Boolean)
       ) {
         throw new GraphQLError("All fields are required", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            http: {
+              status: 400,
+              headers: { "Content-Type": "application/json" },
+            },
+          },
+        });
+      }
+
+      if (!Object.values(UserRole).includes(userRole)) {
+        throw new GraphQLError("Invalid role", {
           extensions: {
             code: "BAD_USER_INPUT",
             http: {
@@ -68,6 +81,7 @@ export class AuthResolver {
           dateOfBirth,
           email,
           mobileNumber,
+          role: userRole as any,
         },
       });
 
@@ -104,7 +118,6 @@ export class AuthResolver {
           },
         });
       }
-
       const user = await prisma.user.findFirst({
         where: {
           OR: [{ email: identifier }, { mobileNumber: identifier }],

@@ -14,104 +14,122 @@ datasource db {
 
 enum UserRole {
   CUSTOMER
-  RESTAURANT_OWNER
   DELIVERY_PERSON
+  RESTAURANT_OWNER
+}
+
+enum OrderStatus {
+  PENDING
+  IN_PROGRESS
+  DELIVERED
+  CANCELLED
+}
+
+enum DeliveryStatus {
+  ASSIGNED
+  IN_TRANSIT
+  DELIVERED
 }
 
 model User {
-  id            String   @id @default(cuid())
-  fullname      String
-  email         String   @unique
-  mobileNumber  String   @unique
-  password      String
-  dateOfBirth   DateTime
-  role          UserRole @default(CUSTOMER)
-  address       String?
-  otp           String? // For Forgot Password 4-digit OTP
-  otpExpires    DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  
-  // Relations
-  restaurants   Restaurant[] // Restaurant owners may have multiple restaurants
-  orders        Order[]      // Users can place many orders
-  carts         Cart[]       // Users can have multiple carts
-  deliveries    Delivery[]   // Users assigned to multiple deliveries (if delivery person)
+  id           String     @id @default(cuid())
+  fullname     String
+  email        String     @unique
+  mobileNumber String     @unique
+  password     String
+  role         UserRole   @default(CUSTOMER)
+  dateOfBirth  DateTime
+  address      String?
+  otp          String?
+  otpExpires   DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  orders       Order[]
+  cart         Cart?
+  deliveries   Delivery[] @relation("DeliveryPerson")
+  ownedRestaurants Restaurant[] @relation("RestaurantOwner")
 }
 
 model Restaurant {
-  id          String     @id @default(cuid())
-  name        String
-  location    String
-  menuItems   MenuItem[] // Restaurant has multiple menu items
+  id           String     @id @default(cuid())
+  name         String
+  location     String
+  menuItems    MenuItem[]
   operatingHours String
-  ownerId     String     // User (Restaurant Owner)
-  owner       User       @relation(fields: [ownerId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
-  // Relations
-  orders      Order[]    // Restaurant can have many orders
+  owner        User?      @relation("RestaurantOwner", fields: [ownerId], references: [id])
+  ownerId      String?
+  orders       Order[]
 }
 
 model MenuItem {
-  id          String      @id @default(cuid())
+  id          String     @id @default(cuid())
   name        String
   description String
   price       Float
   category    String
+  imageUrl    String
   restaurant  Restaurant  @relation(fields: [restaurantId], references: [id])
   restaurantId String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
-  // Inverse relations
-  orderItems  OrderItem[] // MenuItem can be part of multiple OrderItems
-  cartItems   CartItem[]  // MenuItem can be part of multiple CartItems
+  orderItems  OrderItem[]
+  cartItems   CartItem[]
 }
 
 model Order {
-  id          String     @id @default(cuid())
-  totalPrice  Float
-  status      String     @default("pending") // Options: pending, in-progress, delivered
-  userId      String
-  user        User       @relation(fields: [userId], references: [id])
+  id           String      @id @default(cuid())
+  user         User        @relation(fields: [userId], references: [id])
+  userId       String
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
   restaurantId String
-  restaurant  Restaurant @relation(fields: [restaurantId], references: [id])
+  totalPrice   Float
+  status       OrderStatus @default(PENDING)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 
-  // Order items relation
-  orderItems  OrderItem[]
-  delivery    Delivery?
-  createdAt   DateTime   @default(now())
+  orderItems   OrderItem[]
+  delivery     Delivery?
 }
 
 model OrderItem {
-  id          String     @id @default(cuid())
-  orderId     String
-  order       Order      @relation(fields: [orderId], references: [id])
-  menuItemId  String
-  menuItem    MenuItem   @relation(fields: [menuItemId], references: [id])
-  quantity    Int
+  id         String   @id @default(cuid())
+  order      Order    @relation(fields: [orderId], references: [id])
+  orderId    String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  menuItemId String
+  quantity   Int
 }
 
 model Delivery {
-  id              String   @id @default(cuid())
-  deliveryPersonId String   // Delivery Person (User)
-  deliveryPerson   User     @relation(fields: [deliveryPersonId], references: [id])
-  orderId         String   @unique
-  order           Order    @relation(fields: [orderId], references: [id])
-  status          String   @default("assigned") // Options: assigned, in-transit, delivered
+  id              String      @id @default(cuid())
+  order           Order       @relation(fields: [orderId], references: [id])
+  orderId         String      @unique
+  deliveryPerson  User        @relation("DeliveryPerson", fields: [deliveryPersonId], references: [id])
+  deliveryPersonId String
+  status          DeliveryStatus @default(ASSIGNED)
   deliveryTime    DateTime
 }
 
 model Cart {
-  id        String    @id @default(cuid())
-  userId    String
-  user      User      @relation(fields: [userId], references: [id])
-  cartItems CartItem[]
+  id         String    @id @default(cuid())
+  user       User      @relation(fields: [userId], references: [id])
+  userId     String    @unique
+  cartItems  CartItem[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
 
 model CartItem {
-  id          String   @id @default(cuid())
-  cartId      String
-  cart        Cart     @relation(fields: [cartId], references: [id])
-  menuItemId  String
-  menuItem    MenuItem @relation(fields: [menuItemId], references: [id])
-  quantity    Int
+  id         String   @id @default(cuid())
+  cart       Cart     @relation(fields: [cartId], references: [id])
+  cartId     String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  menuItemId String
+  quantity   Int
+  createdAt  DateTime @default(now())
 }
