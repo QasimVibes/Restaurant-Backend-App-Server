@@ -12,7 +12,9 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^5.19.1",
+    "@types/graphql-upload": "^16.0.7",
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.4.0",
     "graphql": "^16.9.0",
     "graphql-yoga": "^5.7.0",
     "jsonwebtoken": "^9.0.2",
