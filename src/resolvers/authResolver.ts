@@ -1,10 +1,11 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
-import { GraphQLContext, UserRole } from "../../types/types";
-import { emailForgotPassword } from "../../libs/email/emailForgotPassword";
+import { Arg, Ctx, Mutation, Resolver, UseMiddleware } from "type-graphql";
+import { GraphQLContext, UserRole } from "../types/types";
+import { emailForgotPassword } from "../libs/email/emailForgotPassword";
 import { GraphQLError } from "graphql";
-import { verifyToken } from "../../utils/authorization";
+import { User } from "../../prisma/generated/type-graphql";
+import { isAuth } from "../middleware/isAuth";
 
 @Resolver()
 export class AuthResolver {
@@ -17,33 +18,21 @@ export class AuthResolver {
     this.secret = secret;
   }
 
-  @Mutation(() => String)
+  @Mutation(() => User)
   async signup(
     @Arg("fullname") fullname: string,
     @Arg("password") password: string,
     @Arg("dateOfBirth") dateOfBirth: Date,
     @Arg("email") email: string,
     @Arg("mobileNumber") mobileNumber: string,
-    @Arg("role", { defaultValue: UserRole.CUSTOMER }) userRole: UserRole,
+    @Arg("role", { defaultValue: UserRole.CUSTOMER }) role: UserRole,
     @Ctx() { prisma }: GraphQLContext
-  ): Promise<string> {
+  ): Promise<User> {
     try {
       if (
         ![fullname, password, dateOfBirth, email, mobileNumber].every(Boolean)
       ) {
         throw new GraphQLError("All fields are required", {
-          extensions: {
-            code: "BAD_USER_INPUT",
-            http: {
-              status: 400,
-              headers: { "Content-Type": "application/json" },
-            },
-          },
-        });
-      }
-
-      if (!Object.values(UserRole).includes(userRole)) {
-        throw new GraphQLError("Invalid role", {
           extensions: {
             code: "BAD_USER_INPUT",
             http: {
@@ -74,20 +63,20 @@ export class AuthResolver {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      await prisma.user.create({
+      const user = await prisma.user.create({
         data: {
           fullname,
           password: hashedPassword,
           dateOfBirth,
           email,
           mobileNumber,
-          role: userRole as any,
+          role,
         },
       });
 
-      return "User created successfully";
+      return user;
     } catch (error: any) {
-      throw new GraphQLError(error.message, {
+      throw new GraphQLError(error.message || "Internal server error", {
         extensions: {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: error.extensions?.http || {
@@ -152,9 +141,13 @@ export class AuthResolver {
         });
       }
 
-      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
-        expiresIn: "1d",
-      });
+      const token = jwt.sign(
+        { id: user.id, role: user.role },
+        process.env.JWT_SECRET!,
+        {
+          expiresIn: "7d",
+        }
+      );
 
       return token;
     } catch (error: any) {
@@ -170,23 +163,36 @@ export class AuthResolver {
       });
     }
   }
-  @Mutation(() => String)
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
   async resetPassword(
     @Arg("password") password: string,
     @Ctx() context: GraphQLContext
-  ): Promise<string> {
+  ): Promise<Boolean> {
     try {
-      const userId = verifyToken(context);
-      const { prisma } = context;
+      const { prisma, user } = context;
+      if (!user || !user.id || !user.role) {
+        throw new GraphQLError("User not authenticated", {
+          extensions: {
+            code: "UNAUTHORIZED",
+            http: {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            },
+          },
+        });
+      }
+
       const hashedPassword = await bcrypt.hash(password, 10);
       const updatedUser = await prisma.user.update({
         where: {
-          id: userId,
+          id: user.id,
         },
         data: {
           password: hashedPassword,
         },
       });
+
       if (!updatedUser) {
         throw new GraphQLError("User not found", {
           extensions: {
@@ -198,7 +204,8 @@ export class AuthResolver {
           },
         });
       }
-      return "Password reset successful";
+
+      return true;
     } catch (error: any) {
       throw new GraphQLError(error.message, {
         extensions: {

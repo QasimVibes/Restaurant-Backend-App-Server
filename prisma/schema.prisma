@@ -32,33 +32,33 @@ enum DeliveryStatus {
 }
 
 model User {
-  id           String     @id @default(cuid())
+  id           String     @id @default(cuid()) 
   fullname     String
   email        String     @unique
   mobileNumber String     @unique
-  password     String
+  password     String     
   role         UserRole   @default(CUSTOMER)
   dateOfBirth  DateTime
   address      String?
-  otp          String?
-  otpExpires   DateTime?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  otp          String?     
+  otpExpires   DateTime?   
+  createdAt    DateTime   @default(now()) 
+  updatedAt    DateTime   @updatedAt 
 
   orders       Order[]
   cart         Cart?
-  deliveries   Delivery[] @relation("DeliveryPerson")
-  ownedRestaurants Restaurant[] @relation("RestaurantOwner")
+  deliveries   Delivery[] @relation("DeliveryPerson") 
+  ownedRestaurants Restaurant[] @relation("RestaurantOwner") 
 }
 
 model Restaurant {
-  id           String     @id @default(cuid())
+  id           String     @id @default(cuid()) 
   name         String
   location     String
   menuItems    MenuItem[]
   operatingHours String
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  createdAt    DateTime   @default(now()) 
+  updatedAt    DateTime   @updatedAt 
 
   owner        User?      @relation("RestaurantOwner", fields: [ownerId], references: [id])
   ownerId      String?
@@ -66,7 +66,7 @@ model Restaurant {
 }
 
 model MenuItem {
-  id          String     @id @default(cuid())
+  id          String     @id @default(cuid()) 
   name        String
   description String
   price       Float
@@ -74,30 +74,30 @@ model MenuItem {
   imageUrl    String
   restaurant  Restaurant  @relation(fields: [restaurantId], references: [id])
   restaurantId String
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  createdAt   DateTime    @default(now()) 
+  updatedAt   DateTime    @updatedAt 
 
   orderItems  OrderItem[]
   cartItems   CartItem[]
 }
 
 model Order {
-  id           String      @id @default(cuid())
+  id           String      @id @default(cuid()) 
   user         User        @relation(fields: [userId], references: [id])
   userId       String
   restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
   restaurantId String
   totalPrice   Float
   status       OrderStatus @default(PENDING)
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  createdAt    DateTime    @default(now()) 
+  updatedAt    DateTime    @default(now()) 
 
   orderItems   OrderItem[]
   delivery     Delivery?
 }
 
 model OrderItem {
-  id         String   @id @default(cuid())
+  id         String   @id @default(cuid()) 
   order      Order    @relation(fields: [orderId], references: [id])
   orderId    String
   menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
@@ -106,7 +106,7 @@ model OrderItem {
 }
 
 model Delivery {
-  id              String      @id @default(cuid())
+  id              String      @id @default(cuid()) 
   order           Order       @relation(fields: [orderId], references: [id])
   orderId         String      @unique
   deliveryPerson  User        @relation("DeliveryPerson", fields: [deliveryPersonId], references: [id])
@@ -116,20 +116,20 @@ model Delivery {
 }
 
 model Cart {
-  id         String    @id @default(cuid())
+  id         String    @id @default(cuid()) 
   user       User      @relation(fields: [userId], references: [id])
   userId     String    @unique
   cartItems  CartItem[]
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  createdAt  DateTime  @default(now()) 
+  updatedAt  DateTime  @updatedAt 
 }
 
 model CartItem {
-  id         String   @id @default(cuid())
+  id         String   @id @default(cuid()) 
   cart       Cart     @relation(fields: [cartId], references: [id])
   cartId     String
   menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
   menuItemId String
   quantity   Int
-  createdAt  DateTime @default(now())
+  createdAt  DateTime @default(now()) 
 }

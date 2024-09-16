@@ -3,7 +3,7 @@ import { buildSchema } from "type-graphql";
 import { createServer } from "node:http";
 import { createYoga } from "graphql-yoga";
 import { resolvers as prismaResolvers } from "../prisma/generated/type-graphql";
-import { AuthResolver } from "./resolvers/Mutation/auth";
+import { AuthResolver } from "./resolvers/authResolver";
 import prisma from "./libs/prisma";
 
 async function bootstrap() {

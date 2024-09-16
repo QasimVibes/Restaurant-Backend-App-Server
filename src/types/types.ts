@@ -1,17 +1,19 @@
 import { PrismaClient } from "@prisma/client";
-import { IncomingMessage } from "http";
-
-export type GraphQLContext = {
-  prisma: PrismaClient;
-  request: IncomingMessage;
-};
-
-export type CustomHeaders = {
-  get: (key: string) => string | undefined;
-};
+import { YogaInitialContext } from "graphql-yoga";
 
 export enum UserRole {
   CUSTOMER = "CUSTOMER",
   DELIVERY_PERSON = "DELIVERY_PERSON",
   RESTAURANT_OWNER = "RESTAURANT_OWNER",
 }
+
+export type JwtPayload = {
+  id: string;
+  role: string;
+};
+
+export type GraphQLContext = {
+  prisma: PrismaClient;
+  token?: string;
+  user?: JwtPayload;
+} & YogaInitialContext;
