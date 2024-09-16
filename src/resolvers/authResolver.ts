@@ -1,11 +1,12 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Arg, Ctx, Mutation, Resolver, UseMiddleware } from "type-graphql";
-import { GraphQLContext, UserRole } from "../types/types";
+import { GraphQLContext } from "../types/types";
 import { emailForgotPassword } from "../libs/email/emailForgotPassword";
 import { GraphQLError } from "graphql";
 import { User } from "../../prisma/generated/type-graphql";
 import { isAuth } from "../middleware/isAuth";
+import { UserRole } from "@prisma/client";
 
 @Resolver()
 export class AuthResolver {

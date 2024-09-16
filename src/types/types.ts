@@ -1,12 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { YogaInitialContext } from "graphql-yoga";
 
-export enum UserRole {
-  CUSTOMER = "CUSTOMER",
-  DELIVERY_PERSON = "DELIVERY_PERSON",
-  RESTAURANT_OWNER = "RESTAURANT_OWNER",
-}
-
 export type JwtPayload = {
   id: string;
   role: string;

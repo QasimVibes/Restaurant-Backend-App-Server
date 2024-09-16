@@ -46,11 +46,11 @@ export class UserResolver {
       }
 
       return userData;
-    } catch (error) {
-      throw new GraphQLError("An error occurred while fetching user data", {
+    } catch (error: any) {
+      throw new GraphQLError(error.message, {
         extensions: {
-          code: "INTERNAL_SERVER_ERROR",
-          http: {
+          code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
+          http: error.extensions?.http || {
             status: 500,
             headers: { "Content-Type": "application/json" },
           },
