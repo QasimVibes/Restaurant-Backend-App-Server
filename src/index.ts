@@ -4,12 +4,13 @@ import { createServer } from "node:http";
 import { createYoga } from "graphql-yoga";
 import { resolvers as prismaResolvers } from "../prisma/generated/type-graphql";
 import { AuthResolver } from "./resolvers/authResolver";
+import { CartResolver } from "./resolvers/cartResolver";
 import prisma from "./libs/prisma";
 
 async function bootstrap() {
   try {
     const schema = await buildSchema({
-      resolvers: [...prismaResolvers, AuthResolver],
+      resolvers: [...prismaResolvers, AuthResolver, CartResolver],
       validate: false,
     });
 
