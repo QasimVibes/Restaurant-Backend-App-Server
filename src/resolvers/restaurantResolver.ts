@@ -9,7 +9,7 @@ import {
 import { GraphQLError } from "graphql";
 import { isAuth } from "../middleware/isAuth";
 import { GraphQLContext } from "../types/types";
-import { Restaurant } from "../../prisma/generated/type-graphql";
+import { MenuItem, Restaurant } from "../../prisma/generated/type-graphql";
 
 @Resolver()
 @UseMiddleware(isAuth)
@@ -140,6 +140,218 @@ export class RestaurantResolver {
           operatingHours,
         },
       });
+
+      return true;
+    } catch (error: any) {
+      throw new GraphQLError(error.message, {
+        extensions: {
+          code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
+          http: {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          },
+          originalError: error,
+        },
+      });
+    }
+  }
+
+  @Query(() => [MenuItem], { nullable: true })
+  async menuItems(
+    @Arg("restaurantId") restaurantId: string,
+    @Ctx() { prisma }: GraphQLContext
+  ): Promise<MenuItem[] | null> {
+    try {
+      const menuItems = await prisma.menuItem.findMany({
+        where: { restaurantId },
+      });
+
+      return menuItems;
+    } catch (error: any) {
+      throw new GraphQLError(error.message, {
+        extensions: {
+          code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
+          http: {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          },
+          originalError: error,
+        },
+      });
+    }
+  }
+
+  @Mutation(() => Boolean)
+  async createMenuItem(
+    @Arg("name") name: string,
+    @Arg("description") description: string,
+    @Arg("price") price: number,
+    @Arg("category") category: string,
+    @Arg("imageUrl") imageUrl: string,
+    @Arg("restaurantId") restaurantId: string,
+    @Ctx() { prisma, user }: GraphQLContext
+  ): Promise<boolean> {
+    try {
+      if (!user || !user.id || user.role !== "RESTAURANT_OWNER") {
+        throw new GraphQLError("User not authenticated", {
+          extensions: {
+            code: "UNAUTHORIZED",
+            http: {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            },
+          },
+        });
+      }
+
+      const restaurant = await prisma.restaurant.findUnique({
+        where: { id: restaurantId, ownerId: user.id },
+      });
+
+      if (!restaurant) {
+        throw new GraphQLError("Restaurant not found", {
+          extensions: {
+            code: "NOT_FOUND",
+            http: {
+              status: 404,
+              headers: { "Content-Type": "application/json" },
+            },
+          },
+        });
+      }
+
+      await prisma.menuItem.create({
+        data: {
+          name,
+          description,
+          price,
+          category,
+          imageUrl,
+          restaurantId,
+        },
+      });
+      return true;
+    } catch (error: any) {
+      throw new GraphQLError(error.message, {
+        extensions: {
+          code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
+          http: {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          },
+          originalError: error,
+        },
+      });
+    }
+  }
+
+  @Mutation(() => Boolean)
+  async updateMenuItem(
+    @Arg("id") id: string,
+    @Arg("name") name: string,
+    @Arg("description") description: string,
+    @Arg("price") price: number,
+    @Arg("category") category: string,
+    @Arg("imageUrl") imageUrl: string,
+    @Arg("restaurantId") restaurantId: string,
+    @Ctx() { prisma, user }: GraphQLContext
+  ): Promise<boolean> {
+    try {
+      if (!user || !user.id || user.role !== "RESTAURANT_OWNER") {
+        throw new GraphQLError("User not authenticated", {
+          extensions: {
+            code: "UNAUTHORIZED",
+            http: {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            },
+          },
+        });
+      }
+
+      const menuItem = await prisma.menuItem.findFirst({
+        where: {
+          id,
+          restaurantId,
+        },
+      });
+
+      if (!menuItem) {
+        throw new GraphQLError("MenuItem not found", {
+          extensions: {
+            code: "NOT_FOUND",
+            http: {
+              status: 404,
+              headers: { "Content-Type": "application/json" },
+            },
+          },
+        });
+      }
+
+      await prisma.menuItem.update({
+        where: {
+          id,
+        },
+        data: {
+          name,
+          description,
+          price,
+          category,
+          imageUrl,
+        },
+      });
+
+      return true;
+    } catch (error: any) {
+      throw new GraphQLError(error.message, {
+        extensions: {
+          code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
+          http: {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          },
+          originalError: error,
+        },
+      });
+    }
+  }
+
+  @Mutation(() => Boolean)
+  async deleteMenuItem(
+    @Arg("id") id: string,
+    @Arg("restaurantId") restaurantId: string,
+    @Ctx() { prisma, user }: GraphQLContext
+  ): Promise<boolean> {
+    try {
+      if (!user || !user.id || user.role !== "RESTAURANT_OWNER") {
+        throw new GraphQLError("User not authenticated", {
+          extensions: {
+            code: "UNAUTHORIZED",
+            http: {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            },
+          },
+        });
+      }
+
+      const menuItem = await prisma.menuItem.findFirst({
+        where: { id, restaurantId },
+      });
+
+      if (!menuItem) {
+        throw new GraphQLError("MenuItem not found", {
+          extensions: {
+            code: "NOT_FOUND",
+            http: {
+              status: 404,
+              headers: { "Content-Type": "application/json" },
+            },
+          },
+        });
+      }
+
+      await prisma.menuItem.delete({ where: { id } });
 
       return true;
     } catch (error: any) {
