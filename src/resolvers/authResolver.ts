@@ -75,6 +75,13 @@ export class AuthResolver {
         },
       });
 
+      if (role === UserRole.DELIVERY_PERSON) {
+        await prisma.deliveryPerson.create({
+          data: {
+            userId: user.id,
+          },
+        });
+      }
       return user;
     } catch (error: any) {
       throw new GraphQLError(error.message || "Internal server error", {

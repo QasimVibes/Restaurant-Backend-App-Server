@@ -8,6 +8,7 @@ import { CartResolver } from "./resolvers/cartResolver";
 import { UserResolver } from "./resolvers/userResolver";
 import { RestaurantResolver } from "./resolvers/restaurantResolver";
 import prisma from "./libs/prisma";
+import { OrderResolver } from "./resolvers/orderResolver";
 
 async function bootstrap() {
   try {
@@ -18,6 +19,7 @@ async function bootstrap() {
         CartResolver,
         UserResolver,
         RestaurantResolver,
+        OrderResolver,
       ],
       validate: false,
     });
