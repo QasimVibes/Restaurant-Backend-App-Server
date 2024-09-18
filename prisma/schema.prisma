@@ -25,6 +25,11 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum DeliveryPersonStatus {
+  AVAILABLE
+  UNAVAILABLE
+}
+
 enum DeliveryStatus {
   ASSIGNED
   IN_TRANSIT
@@ -32,23 +37,23 @@ enum DeliveryStatus {
 }
 
 model User {
-  id           String     @id @default(cuid()) 
-  fullname     String
-  email        String     @unique
-  mobileNumber String     @unique
-  password     String     
-  role         UserRole   @default(CUSTOMER)
-  dateOfBirth  DateTime
-  address      String?
-  otp          String?     
-  otpExpires   DateTime?   
-  createdAt    DateTime   @default(now()) 
-  updatedAt    DateTime   @updatedAt 
+  id               String       @id @default(cuid())
+  fullname         String
+  email            String       @unique
+  mobileNumber     String       @unique
+  password         String
+  role             UserRole     @default(CUSTOMER)
+  dateOfBirth      DateTime
+  address          String?
+  otp              String?
+  otpExpires       DateTime?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
 
-  orders       Order[]
-  cart         Cart?
-  deliveries   Delivery[] @relation("DeliveryPerson") 
-  ownedRestaurants Restaurant[] @relation("RestaurantOwner") 
+  orders           Order[]
+  cart             Cart?
+  deliveryPerson   DeliveryPerson? @relation("UserToDeliveryPerson")
+  ownedRestaurants Restaurant[] @relation("RestaurantOwner")
 }
 
 model Restaurant {
@@ -106,14 +111,23 @@ model OrderItem {
   quantity   Int
 }
 
+model DeliveryPerson {
+  id               String     @id @default(cuid())
+  user             User       @relation("UserToDeliveryPerson", fields: [userId], references: [id])
+  userId           String     @unique
+  status           DeliveryPersonStatus     @default(AVAILABLE)
+  
+  deliveries       Delivery[] @relation("DeliveryPersonDeliveries")
+}
+
 model Delivery {
-  id              String      @id @default(cuid()) 
-  order           Order       @relation(fields: [orderId], references: [id])
-  orderId         String      @unique
-  deliveryPerson  User        @relation("DeliveryPerson", fields: [deliveryPersonId], references: [id])
+  id               String         @id @default(cuid())
+  order            Order          @relation(fields: [orderId], references: [id])
+  orderId          String         @unique
+  deliveryPerson   DeliveryPerson @relation("DeliveryPersonDeliveries", fields: [deliveryPersonId], references: [id])
   deliveryPersonId String
-  status          DeliveryStatus @default(ASSIGNED)
-  deliveryTime    DateTime
+  status           DeliveryStatus @default(ASSIGNED)
+  deliveryTime     DateTime
 }
 
 model Cart {
