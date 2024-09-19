@@ -51,6 +51,7 @@ export class OrderResolver {
   @Mutation(() => Boolean)
   async createOrder(
     @Arg("cartId") cartId: string,
+    @Arg("deliveryAddress") deliveryAddress: string,
     @Ctx() { prisma, user }: GraphQLContext
   ): Promise<boolean> {
     try {
@@ -143,6 +144,7 @@ export class OrderResolver {
           deliveryPersonId: availableDeliveryPerson.id,
           status: DeliveryStatus.ASSIGNED,
           deliveryTime: new Date(Date.now() + 30 * 60 * 1000),
+          deliveryAddress,
         },
       });
 

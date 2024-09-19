@@ -67,6 +67,7 @@ export class UserResolver {
     @Arg("email") email: string,
     @Arg("mobileNumber") mobileNumber: string,
     @Arg("dateOfBirth") dateOfBirth: Date,
+    @Arg("imageUrl", { nullable: true }) imageUrl?: string,
     @Arg("address", { nullable: true }) address?: string
   ): Promise<boolean> {
     try {
@@ -112,6 +113,7 @@ export class UserResolver {
           mobileNumber,
           dateOfBirth,
           address,
+          imageUrl,
         },
       });
 
