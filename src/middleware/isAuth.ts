@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { MiddlewareFn } from "type-graphql";
 import { GraphQLContext, JwtPayload } from "../types/types";
+import { GraphQLError } from "graphql";
 
 export const isAuth: MiddlewareFn<GraphQLContext> = async (
   { context },
@@ -11,17 +12,39 @@ export const isAuth: MiddlewareFn<GraphQLContext> = async (
     ?.replace("Bearer ", "");
 
   if (!token) {
-    throw new Error("Invalid or missing token");
+    throw new GraphQLError("Token not found", {
+      extensions: {
+        code: "UNAUTHORIZED",
+        http: {
+          status: 401,
+        },
+      },
+    });
   }
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET!);
     if (typeof payload === "string") {
-      throw new Error("Invalid or missing secret");
+      throw new GraphQLError("Authorization failed", {
+        extensions: {
+          code: "UNAUTHORIZED",
+          http: {
+            status: 401,
+          },
+        },
+      });
     }
     context.user = payload as JwtPayload;
-  } catch (err) {
-    throw new Error("Authorization failed");
+  } catch (error: any) {
+    throw new GraphQLError(error.message || "Internal server error", {
+      extensions: {
+        code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
+        http: error.extensions?.http || {
+          status: 500,
+        },
+        originalError: error,
+      },
+    });
   }
 
   return next();

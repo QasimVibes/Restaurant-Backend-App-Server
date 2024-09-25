@@ -15,7 +15,9 @@ import { User } from "../../prisma/generated/type-graphql";
 @UseMiddleware(isAuth)
 export class UserResolver {
   @Query(() => User, { nullable: true })
-  async me(@Ctx() { prisma, user }: GraphQLContext): Promise<User | null> {
+  async getCurrentUser(
+    @Ctx() { prisma, user }: GraphQLContext
+  ): Promise<User | null> {
     if (!user || !user.id) {
       throw new GraphQLError("User not authenticated", {
         extensions: {
@@ -32,7 +34,6 @@ export class UserResolver {
       const userData = await prisma.user.findUnique({
         where: { id: user.id },
       });
-
       if (!userData) {
         throw new GraphQLError("User not found", {
           extensions: {

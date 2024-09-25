@@ -41,11 +41,15 @@ model User {
   fullname          String
   email             String            @unique
   mobileNumber      String            @unique
+  /// @TypeGraphQL.omit(output: true)
   password          String
+  /// @TypeGraphQL.omit(output: true)
   role              UserRole          @default(CUSTOMER)
   dateOfBirth       DateTime
   address           String?
+  /// @TypeGraphQL.omit(output: true)
   otp               String?
+  /// @TypeGraphQL.omit(output: true)
   otpExpires        DateTime?
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt

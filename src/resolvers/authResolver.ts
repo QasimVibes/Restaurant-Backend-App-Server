@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Arg, Ctx, Mutation, Resolver, UseMiddleware } from "type-graphql";
 import { GraphQLContext } from "../types/types";
-import { emailForgotPassword } from "../libs/email/emailForgotPassword";
+import { forgotPasswordEmail } from "../libs/forgotPasswordEmail";
 import { GraphQLError } from "graphql";
 import { User } from "../../prisma/generated/type-graphql";
 import { isAuth } from "../middleware/isAuth";
@@ -274,7 +274,7 @@ export class AuthResolver {
       }
 
       const otp = Math.floor(1000 + Math.random() * 9000).toString();
-      await emailForgotPassword(email, otp);
+      await forgotPasswordEmail(email, otp);
 
       const updatedUser = await prisma.user.update({
         where: {

@@ -9,8 +9,7 @@ import {
 import { GraphQLError } from "graphql";
 import { isAuth } from "../middleware/isAuth";
 import { GraphQLContext } from "../types/types";
-import { Cart } from "../../prisma/generated/type-graphql";
-import { CartItemInput } from "../libs/cartItemInput";
+import { Cart, CustomCartItemInput } from "../../prisma/generated/type-graphql";
 
 @Resolver()
 @UseMiddleware(isAuth)
@@ -18,7 +17,8 @@ export class CartResolver {
   @Mutation(() => String)
   async createCart(
     @Ctx() { prisma, user }: GraphQLContext,
-    @Arg("cartItems", () => [CartItemInput]) cartItems: CartItemInput[]
+    @Arg("cartItems", () => [CustomCartItemInput])
+    cartItems: CustomCartItemInput[]
   ): Promise<string> {
     try {
       if (!user || !user.id) {
@@ -97,7 +97,8 @@ export class CartResolver {
   async updateCart(
     @Ctx() { prisma, user }: GraphQLContext,
     @Arg("cartId") cartId: string,
-    @Arg("cartItems", () => [CartItemInput]) cartItems: CartItemInput[]
+    @Arg("cartItems", () => [CustomCartItemInput])
+    cartItems: CustomCartItemInput[]
   ): Promise<boolean> {
     try {
       if (!user || !user.id) {

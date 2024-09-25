@@ -2,27 +2,13 @@ import "reflect-metadata";
 import { buildSchema } from "type-graphql";
 import { createServer } from "node:http";
 import { createYoga } from "graphql-yoga";
-import { resolvers as prismaResolvers } from "../prisma/generated/type-graphql";
-import { AuthResolver } from "./resolvers/authResolver";
-import { CartResolver } from "./resolvers/cartResolver";
-import { UserResolver } from "./resolvers/userResolver";
-import { RestaurantResolver } from "./resolvers/restaurantResolver";
 import prisma from "./libs/prisma";
-import { OrderResolver } from "./resolvers/orderResolver";
-import { DeliveryResolver } from "./resolvers/deliveryResolver";
+import { resolvers } from "./resolvers";
 
 async function bootstrap() {
   try {
     const schema = await buildSchema({
-      resolvers: [
-        ...prismaResolvers,
-        AuthResolver,
-        CartResolver,
-        UserResolver,
-        RestaurantResolver,
-        OrderResolver,
-        DeliveryResolver,
-      ],
+      resolvers,
       validate: false,
     });
 

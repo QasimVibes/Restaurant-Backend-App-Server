@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-export const emailForgotPassword = async (to: string, otp: string) => {
+export const forgotPasswordEmail = async (to: string, otp: string) => {
   const { SMTP_USER, SMTP_PASS } = process.env;
   if (!SMTP_USER || !SMTP_PASS) {
     console.error(

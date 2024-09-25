@@ -157,7 +157,7 @@ export class RestaurantResolver {
   }
 
   @Query(() => [MenuItem], { nullable: true })
-  async menuItems(
+  async getmenuItems(
     @Arg("restaurantId") restaurantId: string,
     @Ctx() { prisma }: GraphQLContext
   ): Promise<MenuItem[] | null> {
