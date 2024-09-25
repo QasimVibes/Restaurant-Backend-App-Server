@@ -23,7 +23,7 @@ export class OrderResolver {
   @Query(() => [Order], { nullable: true })
   async getAllOrders(
     @Arg("restaurantId") restaurantId: string,
-    @Arg("status", { defaultValue: OrderStatus.PENDING }) status: OrderStatus,
+    @Arg("status", { defaultValue: OrderStatus?.PENDING }) status: OrderStatus,
     @Ctx() { prisma }: GraphQLContext
   ): Promise<Order[]> {
     try {
@@ -54,8 +54,8 @@ export class OrderResolver {
     @Ctx() { prisma, user }: GraphQLContext
   ): Promise<boolean> {
     try {
-      if (!user || !user.id || user.role !== "CUSTOMER") {
-        throw new GraphQLError("User not authenticated", {
+      if (!user || !user?.id || user?.role !== "CUSTOMER") {
+        throw new GraphQLError("User not authenticated or not a customer", {
           extensions: {
             code: "UNAUTHORIZED",
             http: {
@@ -67,7 +67,7 @@ export class OrderResolver {
 
       const availableDeliveryPerson = await prisma.deliveryPerson.findFirst({
         where: {
-          status: DeliveryPersonStatus.AVAILABLE,
+          status: DeliveryPersonStatus?.AVAILABLE,
         },
       });
 
@@ -91,7 +91,7 @@ export class OrderResolver {
         },
       });
 
-      if (!cart || cart.userId !== user.id) {
+      if (!cart || cart?.userId !== user?.id) {
         throw new GraphQLError("Cart not found or belongs to another user", {
           extensions: {
             code: "NOT_FOUND",
@@ -102,7 +102,7 @@ export class OrderResolver {
         });
       }
 
-      if (cart.cartItems.length === 0) {
+      if (cart?.cartItems.length === 0) {
         throw new GraphQLError("Cart is empty", {
           extensions: {
             code: "EMPTY_CART",
@@ -114,20 +114,20 @@ export class OrderResolver {
       }
 
       let totalPrice = 0;
-      cart.cartItems.forEach((cartItem) => {
-        totalPrice += cartItem.menuItem.price * cartItem.quantity;
+      cart?.cartItems?.forEach((cartItem) => {
+        totalPrice += cartItem?.menuItem?.price * cartItem?.quantity;
       });
 
       const createdOrder = await prisma.order.create({
         data: {
-          userId: user.id,
-          restaurantId: cart.cartItems[0]?.menuItem.restaurantId,
+          userId: user?.id,
+          restaurantId: cart?.cartItems[0]?.menuItem?.restaurantId,
           totalPrice,
-          status: OrderStatus.PENDING,
+          status: OrderStatus?.PENDING,
           orderItems: {
-            create: cart.cartItems.map((cartItem: CartItem) => ({
-              menuItemId: cartItem.menuItemId,
-              quantity: cartItem.quantity,
+            create: cart?.cartItems?.map((cartItem: CartItem) => ({
+              menuItemId: cartItem?.menuItemId,
+              quantity: cartItem?.quantity,
             })),
           },
         },
@@ -135,23 +135,23 @@ export class OrderResolver {
 
       await prisma.delivery.create({
         data: {
-          orderId: createdOrder.id,
-          deliveryPersonId: availableDeliveryPerson.id,
-          status: DeliveryStatus.ASSIGNED,
+          orderId: createdOrder?.id,
+          deliveryPersonId: availableDeliveryPerson?.id,
+          status: DeliveryStatus?.ASSIGNED,
           deliveryTime: new Date(Date.now() + 30 * 60 * 1000),
           deliveryAddress,
         },
       });
 
       await prisma.deliveryPerson.update({
-        where: { id: availableDeliveryPerson.id },
+        where: { id: availableDeliveryPerson?.id },
         data: {
-          status: DeliveryPersonStatus.UNAVAILABLE,
+          status: DeliveryPersonStatus?.UNAVAILABLE,
         },
       });
 
-      await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
-      await prisma.cart.delete({ where: { id: cart.id } });
+      await prisma.cartItem.deleteMany({ where: { cartId: cart?.id } });
+      await prisma.cart.delete({ where: { id: cart?.id } });
 
       return true;
     } catch (error: any) {
@@ -173,8 +173,8 @@ export class OrderResolver {
     @Ctx() { prisma, user }: GraphQLContext
   ): Promise<boolean> {
     try {
-      if (!user || !user.id || user.role !== "CUSTOMER") {
-        throw new GraphQLError("User not authenticated", {
+      if (!user || !user?.id || user?.role !== "CUSTOMER") {
+        throw new GraphQLError("User not authenticated or not a customer", {
           extensions: {
             code: "UNAUTHORIZED",
             http: {
@@ -185,7 +185,7 @@ export class OrderResolver {
       }
 
       const order = await prisma.order.findUnique({
-        where: { id: orderId, status: OrderStatus.PENDING },
+        where: { id: orderId, status: OrderStatus?.PENDING },
       });
       if (!order) {
         throw new GraphQLError("Order not found", {
@@ -205,14 +205,14 @@ export class OrderResolver {
       await prisma.order.update({
         where: { id: orderId },
         data: {
-          status: OrderStatus.CANCELLED,
+          status: OrderStatus?.CANCELLED,
         },
       });
 
       await prisma.deliveryPerson.update({
         where: { id: deliveryPersonId?.deliveryPersonId },
         data: {
-          status: DeliveryPersonStatus.AVAILABLE,
+          status: DeliveryPersonStatus?.AVAILABLE,
         },
       });
 

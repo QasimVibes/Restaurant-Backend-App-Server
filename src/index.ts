@@ -5,7 +5,7 @@ import { createYoga } from "graphql-yoga";
 import prisma from "./libs/prisma";
 import { resolvers } from "./resolvers";
 
-async function bootstrap() {
+async function initializeServer() {
   try {
     const schema = await buildSchema({
       resolvers,
@@ -32,4 +32,4 @@ async function bootstrap() {
   }
 }
 
-bootstrap();
+initializeServer();

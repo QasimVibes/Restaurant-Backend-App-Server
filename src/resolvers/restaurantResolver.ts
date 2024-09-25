@@ -39,8 +39,8 @@ export class RestaurantResolver {
     @Ctx() { prisma, user }: GraphQLContext
   ): Promise<Boolean> {
     try {
-      if (!user || !user.id || user.role !== "RESTAURANT_OWNER") {
-        throw new GraphQLError("User not authenticated", {
+      if (!user || !user?.id || user?.role !== "RESTAURANT_OWNER") {
+        throw new GraphQLError("User not authenticated or not authorized", {
           extensions: {
             code: "UNAUTHORIZED",
             http: {
@@ -53,7 +53,7 @@ export class RestaurantResolver {
       const alreadyExists = await prisma.restaurant.findFirst({
         where: {
           name,
-          ownerId: user.id,
+          ownerId: user?.id,
         },
       });
 
@@ -73,7 +73,7 @@ export class RestaurantResolver {
           name,
           location,
           operatingHours,
-          ownerId: user.id,
+          ownerId: user?.id,
         },
       });
 
@@ -100,7 +100,7 @@ export class RestaurantResolver {
     @Ctx() { prisma, user }: GraphQLContext
   ): Promise<Boolean> {
     try {
-      if (!user || !user.id || user.role !== "RESTAURANT_OWNER") {
+      if (!user || !user?.id || user?.role !== "RESTAURANT_OWNER") {
         throw new GraphQLError("User not authenticated", {
           extensions: {
             code: "UNAUTHORIZED",
@@ -112,7 +112,7 @@ export class RestaurantResolver {
       }
 
       const restaurant = await prisma.restaurant.findUnique({
-        where: { id, ownerId: user.id },
+        where: { id, ownerId: user?.id },
       });
 
       if (!restaurant) {
@@ -127,7 +127,7 @@ export class RestaurantResolver {
       }
 
       await prisma.restaurant.update({
-        where: { id: restaurant.id },
+        where: { id: restaurant?.id },
         data: {
           name,
           location,
@@ -184,7 +184,7 @@ export class RestaurantResolver {
     @Ctx() { prisma, user }: GraphQLContext
   ): Promise<boolean> {
     try {
-      if (!user || !user.id || user.role !== "RESTAURANT_OWNER") {
+      if (!user || !user?.id || user?.role !== "RESTAURANT_OWNER") {
         throw new GraphQLError("User not authenticated", {
           extensions: {
             code: "UNAUTHORIZED",
@@ -196,7 +196,7 @@ export class RestaurantResolver {
       }
 
       const restaurant = await prisma.restaurant.findUnique({
-        where: { id: restaurantId, ownerId: user.id },
+        where: { id: restaurantId, ownerId: user?.id },
       });
 
       if (!restaurant) {
@@ -246,7 +246,7 @@ export class RestaurantResolver {
     @Ctx() { prisma, user }: GraphQLContext
   ): Promise<boolean> {
     try {
-      if (!user || !user.id || user.role !== "RESTAURANT_OWNER") {
+      if (!user || !user?.id || user?.role !== "RESTAURANT_OWNER") {
         throw new GraphQLError("User not authenticated", {
           extensions: {
             code: "UNAUTHORIZED",
@@ -309,7 +309,7 @@ export class RestaurantResolver {
     @Ctx() { prisma, user }: GraphQLContext
   ): Promise<boolean> {
     try {
-      if (!user || !user.id || user.role !== "RESTAURANT_OWNER") {
+      if (!user || !user?.id || user?.role !== "RESTAURANT_OWNER") {
         throw new GraphQLError("User not authenticated", {
           extensions: {
             code: "UNAUTHORIZED",

@@ -21,7 +21,7 @@ export class CartResolver {
     cartItems: CustomCartItemInput[]
   ): Promise<string> {
     try {
-      if (!user || !user.id) {
+      if (!user || !user?.id) {
         throw new GraphQLError("User not authenticated", {
           extensions: {
             code: "UNAUTHORIZED",
@@ -34,9 +34,9 @@ export class CartResolver {
 
       const newCart = await prisma.cart.create({
         data: {
-          userId: user.id,
+          userId: user?.id,
           cartItems: {
-            create: cartItems.map(({ itemId, quantity = 1 }) => ({
+            create: cartItems?.map(({ itemId, quantity = 1 }) => ({
               menuItem: { connect: { id: itemId } },
               quantity,
             })),
@@ -44,7 +44,7 @@ export class CartResolver {
         },
       });
 
-      return `Cart created successfully with ID: ${newCart.id}`;
+      return `Cart created successfully with ID: ${newCart?.id}`;
     } catch (error: any) {
       throw new GraphQLError(error.message, {
         extensions: {
@@ -61,7 +61,7 @@ export class CartResolver {
   @Query(() => Cart, { nullable: true })
   async getCart(@Ctx() { prisma, user }: GraphQLContext): Promise<Cart | null> {
     try {
-      if (!user || !user.id) {
+      if (!user || !user?.id) {
         throw new GraphQLError("User not authenticated", {
           extensions: {
             code: "UNAUTHORIZED",
@@ -73,7 +73,7 @@ export class CartResolver {
       }
 
       return await prisma.cart.findUnique({
-        where: { userId: user.id },
+        where: { userId: user?.id },
         include: { cartItems: true },
       });
     } catch (error: any) {
@@ -97,7 +97,7 @@ export class CartResolver {
     cartItems: CustomCartItemInput[]
   ): Promise<boolean> {
     try {
-      if (!user || !user.id) {
+      if (!user || !user?.id) {
         throw new GraphQLError("User not authenticated", {
           extensions: {
             code: "UNAUTHORIZED",
@@ -110,7 +110,7 @@ export class CartResolver {
 
       const cart = await prisma.cart.findUnique({ where: { id: cartId } });
 
-      if (!cart || cart.userId !== user.id) {
+      if (!cart || cart?.userId !== user?.id) {
         throw new GraphQLError("Cart not found or not authorized", {
           extensions: {
             code: "FORBIDDEN",
@@ -126,7 +126,7 @@ export class CartResolver {
         data: {
           cartItems: {
             deleteMany: {},
-            create: cartItems.map(({ itemId, quantity = 1 }) => ({
+            create: cartItems?.map(({ itemId, quantity = 1 }) => ({
               menuItem: { connect: { id: itemId } },
               quantity,
             })),
@@ -154,7 +154,7 @@ export class CartResolver {
     @Arg("cartId") cartId: string
   ): Promise<boolean> {
     try {
-      if (!user || !user.id) {
+      if (!user || !user?.id) {
         throw new GraphQLError("User not authenticated", {
           extensions: {
             code: "UNAUTHORIZED",
@@ -167,7 +167,7 @@ export class CartResolver {
 
       const cart = await prisma.cart.findUnique({ where: { id: cartId } });
 
-      if (!cart || cart.userId !== user.id) {
+      if (!cart || cart?.userId !== user?.id) {
         throw new GraphQLError("Cart not found or not authorized", {
           extensions: {
             code: "FORBIDDEN",

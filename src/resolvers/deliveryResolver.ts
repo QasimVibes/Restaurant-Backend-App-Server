@@ -26,7 +26,7 @@ export class DeliveryResolver {
     deliveryStatus: DeliveryStatus
   ): Promise<Delivery[]> {
     try {
-      if (!user || !user.id) {
+      if (!user || !user?.id) {
         throw new GraphQLError("User not authenticated", {
           extensions: {
             code: "UNAUTHORIZED",
@@ -40,7 +40,7 @@ export class DeliveryResolver {
       const deliveries = await prisma.delivery.findMany({
         where: {
           order: {
-            userId: user.id,
+            userId: user?.id,
           },
           status: deliveryStatus,
         },
@@ -70,8 +70,8 @@ export class DeliveryResolver {
     @Arg("deliveryStatus") deliveryStatus: DeliveryStatus
   ): Promise<boolean> {
     try {
-      if (!user || !user.id || user.role !== "DELIVERY_PERSON") {
-        throw new GraphQLError("User not authenticated", {
+      if (!user || !user?.id || user?.role !== "DELIVERY_PERSON") {
+        throw new GraphQLError("User not authenticated or not authorized", {
           extensions: {
             code: "UNAUTHORIZED",
             http: {
@@ -98,7 +98,7 @@ export class DeliveryResolver {
 
       const deliveryPerson = await prisma.deliveryPerson.findUnique({
         where: {
-          userId: user.id,
+          userId: user?.id,
         },
       });
 
@@ -118,15 +118,15 @@ export class DeliveryResolver {
         data: { status: deliveryStatus },
       });
 
-      if (updatedDelivery.status === DeliveryStatus.DELIVERED) {
+      if (updatedDelivery?.status === DeliveryStatus?.DELIVERED) {
         await prisma.order.update({
-          where: { id: delivery.orderId },
-          data: { status: OrderStatus.DELIVERED },
+          where: { id: delivery?.orderId },
+          data: { status: OrderStatus?.DELIVERED },
         });
 
         await prisma.deliveryPerson.update({
-          where: { userId: user.id },
-          data: { status: DeliveryPersonStatus.AVAILABLE },
+          where: { userId: user?.id },
+          data: { status: DeliveryPersonStatus?.AVAILABLE },
         });
       }
 

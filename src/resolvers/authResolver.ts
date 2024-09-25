@@ -10,15 +10,6 @@ import { UserRole } from "@prisma/client";
 
 @Resolver()
 export class AuthResolver {
-  private secret: string;
-  constructor() {
-    const secret = process.env.JWT_SECRET;
-    if (!secret) {
-      throw new Error("JWT_SECRET environment variable is not set");
-    }
-    this.secret = secret;
-  }
-
   @Mutation(() => User)
   async signup(
     @Arg("fullname") fullname: string,
@@ -73,10 +64,10 @@ export class AuthResolver {
         },
       });
 
-      if (role === UserRole.DELIVERY_PERSON) {
+      if (role === UserRole?.DELIVERY_PERSON) {
         await prisma.deliveryPerson.create({
           data: {
-            userId: user.id,
+            userId: user?.id,
           },
         });
       }
@@ -145,7 +136,7 @@ export class AuthResolver {
       }
 
       const token = jwt.sign(
-        { id: user.id, role: user.role },
+        { id: user?.id, role: user?.role },
         process.env.JWT_SECRET!,
         {
           expiresIn: "7d",
@@ -173,7 +164,7 @@ export class AuthResolver {
   ): Promise<Boolean> {
     try {
       const { prisma, user } = context;
-      if (!user || !user.id || !user.role) {
+      if (!user || !user?.id || !user?.role) {
         throw new GraphQLError("User not authenticated", {
           extensions: {
             code: "UNAUTHORIZED",
@@ -250,7 +241,7 @@ export class AuthResolver {
           },
         });
       }
-      if (user.otp && user.otpExpires && user.otpExpires > new Date()) {
+      if (user?.otp && user?.otpExpires && user?.otpExpires > new Date()) {
         throw new GraphQLError("OTP already sent", {
           extensions: {
             code: "BAD_USER_INPUT",
@@ -266,7 +257,7 @@ export class AuthResolver {
 
       const updatedUser = await prisma.user.update({
         where: {
-          id: user.id,
+          id: user?.id,
         },
         data: {
           otp: otp,
@@ -332,7 +323,7 @@ export class AuthResolver {
         });
       }
 
-      if (user.otp !== otp) {
+      if (user?.otp !== otp) {
         throw new GraphQLError("Invalid OTP", {
           extensions: {
             code: "INVALID_OTP",
@@ -343,7 +334,7 @@ export class AuthResolver {
         });
       }
 
-      if (user.otpExpires && user.otpExpires < new Date()) {
+      if (user?.otpExpires && user?.otpExpires < new Date()) {
         throw new GraphQLError("OTP expired", {
           extensions: {
             code: "OTP_EXPIRED",
@@ -403,7 +394,7 @@ export class AuthResolver {
         });
       }
 
-      if (user.otp !== otp) {
+      if (user?.otp !== otp) {
         throw new GraphQLError("Invalid OTP", {
           extensions: {
             code: "BAD_USER_INPUT",
@@ -414,7 +405,7 @@ export class AuthResolver {
         });
       }
 
-      if (user.otpExpires && user.otpExpires < new Date()) {
+      if (user?.otpExpires && user?.otpExpires < new Date()) {
         throw new GraphQLError("OTP expired", {
           extensions: {
             code: "BAD_USER_INPUT",
@@ -429,7 +420,7 @@ export class AuthResolver {
 
       const updatedUser = await prisma.user.update({
         where: {
-          id: user.id,
+          id: user?.id,
         },
         data: {
           password: hashedPassword,

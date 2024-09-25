@@ -24,8 +24,6 @@ export const isAuth: MiddlewareFn<GraphQLContext> = async (
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET!);
-    console.log(payload);
-
     if (typeof payload === "string" || !payload) {
       throw new GraphQLError("Authorization failed", {
         extensions: {

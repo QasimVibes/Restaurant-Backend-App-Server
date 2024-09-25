@@ -18,7 +18,7 @@ export class UserResolver {
   async getCurrentUser(
     @Ctx() { prisma, user }: GraphQLContext
   ): Promise<User | null> {
-    if (!user || !user.id) {
+    if (!user || !user?.id) {
       throw new GraphQLError("User not authenticated", {
         extensions: {
           code: "UNAUTHORIZED",
@@ -31,7 +31,7 @@ export class UserResolver {
 
     try {
       const userData = await prisma.user.findUnique({
-        where: { id: user.id },
+        where: { id: user?.id },
       });
       if (!userData) {
         throw new GraphQLError("User not found", {
@@ -88,8 +88,8 @@ export class UserResolver {
       });
 
       if (
-        (existingUserByEmail && existingUserByEmail.id !== user.id) ||
-        (existingUserByMobile && existingUserByMobile.id !== user.id)
+        (existingUserByEmail && existingUserByEmail?.id !== user?.id) ||
+        (existingUserByMobile && existingUserByMobile?.id !== user?.id)
       ) {
         throw new GraphQLError("Mobile number or email already exists", {
           extensions: {
@@ -102,7 +102,7 @@ export class UserResolver {
       }
 
       const updatedUser = await prisma.user.update({
-        where: { id: user.id },
+        where: { id: user?.id },
         data: {
           fullname,
           email,
