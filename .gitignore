@@ -33,9 +33,6 @@ build/
 # TypeGraphQL and metadata generated files
 *.graphql.d.ts
 
-# Prisma client generated code
-prisma/generated/
-
 # IDE-specific files
 .vscode/
 .idea/
