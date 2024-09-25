@@ -38,7 +38,6 @@ export class AuthResolver {
             code: "BAD_USER_INPUT",
             http: {
               status: 400,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -56,7 +55,6 @@ export class AuthResolver {
             code: "BAD_USER_INPUT",
             http: {
               status: 400,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -89,7 +87,6 @@ export class AuthResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: error.extensions?.http || {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },
@@ -110,7 +107,6 @@ export class AuthResolver {
             code: "BAD_USER_INPUT",
             http: {
               status: 400,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -143,7 +139,6 @@ export class AuthResolver {
             code: "INVALID_PASSWORD",
             http: {
               status: 401,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -164,7 +159,6 @@ export class AuthResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: error.extensions?.http || {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },
@@ -185,7 +179,6 @@ export class AuthResolver {
             code: "UNAUTHORIZED",
             http: {
               status: 401,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -207,7 +200,6 @@ export class AuthResolver {
             code: "USER_NOT_FOUND",
             http: {
               status: 404,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -220,7 +212,6 @@ export class AuthResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: error.extensions?.http || {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },
@@ -239,7 +230,6 @@ export class AuthResolver {
             code: "BAD_USER_INPUT",
             http: {
               status: 400,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -256,7 +246,6 @@ export class AuthResolver {
             code: "USER_NOT_FOUND",
             http: {
               status: 404,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -267,7 +256,6 @@ export class AuthResolver {
             code: "BAD_USER_INPUT",
             http: {
               status: 400,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -292,7 +280,6 @@ export class AuthResolver {
             code: "INTERNAL_SERVER_ERROR",
             http: {
               status: 500,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -304,7 +291,6 @@ export class AuthResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: error.extensions?.http || {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },
@@ -325,7 +311,6 @@ export class AuthResolver {
             code: "BAD_USER_INPUT",
             http: {
               status: 400,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -342,7 +327,6 @@ export class AuthResolver {
             code: "USER_NOT_FOUND",
             http: {
               status: 404,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -354,7 +338,6 @@ export class AuthResolver {
             code: "INVALID_OTP",
             http: {
               status: 400,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -366,7 +349,6 @@ export class AuthResolver {
             code: "OTP_EXPIRED",
             http: {
               status: 400,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -379,7 +361,6 @@ export class AuthResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: error.extensions?.http || {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },
@@ -401,7 +382,6 @@ export class AuthResolver {
             code: "BAD_USER_INPUT",
             http: {
               status: 400,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -418,7 +398,6 @@ export class AuthResolver {
             code: "USER_NOT_FOUND",
             http: {
               status: 404,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -430,7 +409,6 @@ export class AuthResolver {
             code: "BAD_USER_INPUT",
             http: {
               status: 400,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -442,7 +420,6 @@ export class AuthResolver {
             code: "BAD_USER_INPUT",
             http: {
               status: 400,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -467,7 +444,6 @@ export class AuthResolver {
             code: "INTERNAL_SERVER_ERROR",
             http: {
               status: 500,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -480,7 +456,6 @@ export class AuthResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: error.extensions?.http || {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },

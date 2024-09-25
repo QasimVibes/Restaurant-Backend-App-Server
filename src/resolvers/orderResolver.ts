@@ -40,7 +40,6 @@ export class OrderResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: error.extensions?.http || {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },
@@ -61,7 +60,6 @@ export class OrderResolver {
             code: "UNAUTHORIZED",
             http: {
               status: 401,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -79,7 +77,6 @@ export class OrderResolver {
             code: "NO_DELIVERY_PERSON_AVAILABLE",
             http: {
               status: 400,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -100,7 +97,6 @@ export class OrderResolver {
             code: "NOT_FOUND",
             http: {
               status: 404,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -112,7 +108,6 @@ export class OrderResolver {
             code: "EMPTY_CART",
             http: {
               status: 400,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -165,7 +160,6 @@ export class OrderResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: error.extensions?.http || {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },
@@ -185,7 +179,6 @@ export class OrderResolver {
             code: "UNAUTHORIZED",
             http: {
               status: 401,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -200,7 +193,6 @@ export class OrderResolver {
             code: "NOT_FOUND",
             http: {
               status: 404,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -232,7 +224,6 @@ export class OrderResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: error.extensions?.http || {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },

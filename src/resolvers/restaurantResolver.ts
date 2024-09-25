@@ -25,7 +25,6 @@ export class RestaurantResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: error.extensions?.http || {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },
@@ -46,7 +45,6 @@ export class RestaurantResolver {
             code: "UNAUTHORIZED",
             http: {
               status: 401,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -65,7 +63,6 @@ export class RestaurantResolver {
             code: "BAD_REQUEST",
             http: {
               status: 400,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -87,7 +84,6 @@ export class RestaurantResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: error.extensions?.http || {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },
@@ -110,7 +106,6 @@ export class RestaurantResolver {
             code: "UNAUTHORIZED",
             http: {
               status: 401,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -126,7 +121,6 @@ export class RestaurantResolver {
             code: "NOT_FOUND",
             http: {
               status: 404,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -148,7 +142,6 @@ export class RestaurantResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },
@@ -173,7 +166,6 @@ export class RestaurantResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },
@@ -198,7 +190,6 @@ export class RestaurantResolver {
             code: "UNAUTHORIZED",
             http: {
               status: 401,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -214,7 +205,6 @@ export class RestaurantResolver {
             code: "NOT_FOUND",
             http: {
               status: 404,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -237,7 +227,6 @@ export class RestaurantResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },
@@ -263,7 +252,6 @@ export class RestaurantResolver {
             code: "UNAUTHORIZED",
             http: {
               status: 401,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -282,7 +270,6 @@ export class RestaurantResolver {
             code: "NOT_FOUND",
             http: {
               status: 404,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -308,7 +295,6 @@ export class RestaurantResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },
@@ -329,7 +315,6 @@ export class RestaurantResolver {
             code: "UNAUTHORIZED",
             http: {
               status: 401,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -345,7 +330,6 @@ export class RestaurantResolver {
             code: "NOT_FOUND",
             http: {
               status: 404,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -360,7 +344,6 @@ export class RestaurantResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },

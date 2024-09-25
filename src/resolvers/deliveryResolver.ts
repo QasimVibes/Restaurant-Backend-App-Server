@@ -32,7 +32,6 @@ export class DeliveryResolver {
             code: "UNAUTHORIZED",
             http: {
               status: 401,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -57,7 +56,6 @@ export class DeliveryResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: error.extensions?.http || {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },
@@ -78,7 +76,6 @@ export class DeliveryResolver {
             code: "UNAUTHORIZED",
             http: {
               status: 401,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -94,7 +91,6 @@ export class DeliveryResolver {
             code: "NOT_FOUND",
             http: {
               status: 404,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -112,7 +108,6 @@ export class DeliveryResolver {
             code: "NOT_FOUND",
             http: {
               status: 404,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -142,7 +137,6 @@ export class DeliveryResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: error.extensions?.http || {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },

@@ -27,7 +27,6 @@ export class CartResolver {
             code: "UNAUTHORIZED",
             http: {
               status: 401,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -52,7 +51,6 @@ export class CartResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: error.extensions?.http || {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },
@@ -69,7 +67,6 @@ export class CartResolver {
             code: "UNAUTHORIZED",
             http: {
               status: 401,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -85,7 +82,6 @@ export class CartResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: error.extensions?.http || {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },
@@ -107,7 +103,6 @@ export class CartResolver {
             code: "UNAUTHORIZED",
             http: {
               status: 401,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -121,7 +116,6 @@ export class CartResolver {
             code: "FORBIDDEN",
             http: {
               status: 403,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -147,7 +141,6 @@ export class CartResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: error.extensions?.http || {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },
@@ -167,7 +160,6 @@ export class CartResolver {
             code: "UNAUTHORIZED",
             http: {
               status: 401,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -181,7 +173,6 @@ export class CartResolver {
             code: "FORBIDDEN",
             http: {
               status: 403,
-              headers: { "Content-Type": "application/json" },
             },
           },
         });
@@ -197,7 +188,6 @@ export class CartResolver {
           code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
           http: error.extensions?.http || {
             status: 500,
-            headers: { "Content-Type": "application/json" },
           },
           originalError: error,
         },
