@@ -9,7 +9,10 @@ import {
 import { GraphQLError } from "graphql";
 import { isAuth } from "../middleware/isAuth";
 import { GraphQLContext } from "../types/types";
-import { Cart, CustomCartItemInput } from "../../prisma/generated/type-graphql";
+import {
+  CartItem,
+  CustomCartItemInput,
+} from "../../prisma/generated/type-graphql";
 
 @Resolver()
 @UseMiddleware(isAuth)
@@ -58,8 +61,10 @@ export class CartResolver {
     }
   }
 
-  @Query(() => Cart, { nullable: true })
-  async getCart(@Ctx() { prisma, user }: GraphQLContext): Promise<Cart | null> {
+  @Query(() => [CartItem], { nullable: true })
+  async getCart(
+    @Ctx() { prisma, user }: GraphQLContext
+  ): Promise<CartItem[] | null> {
     try {
       if (!user || !user?.id) {
         throw new GraphQLError("User not authenticated", {
@@ -71,11 +76,27 @@ export class CartResolver {
           },
         });
       }
-
-      return await prisma.cart.findUnique({
-        where: { userId: user?.id },
-        include: { cartItems: true },
+      const cartItems = await prisma.cartItem.findMany({
+        where: {
+          cart: {
+            userId: user?.id,
+          },
+        },
+        include: {
+          menuItem: true,
+        },
       });
+
+      if (!cartItems || cartItems.length === 0) {
+        throw new GraphQLError("Cart not found for the user", {
+          extensions: {
+            code: "NOT_FOUND",
+            http: { status: 404 },
+          },
+        });
+      }
+
+      return cartItems;
     } catch (error: any) {
       throw new GraphQLError(error.message, {
         extensions: {

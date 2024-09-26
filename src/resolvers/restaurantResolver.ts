@@ -18,7 +18,7 @@ export class RestaurantResolver {
   async getAllRestaurants(@Ctx() { prisma }: GraphQLContext) {
     try {
       const restaurants = await prisma.restaurant.findMany({});
-      return restaurants;
+      return restaurants?.length ? restaurants : null;
     } catch (error: any) {
       throw new GraphQLError(error.message, {
         extensions: {
@@ -261,6 +261,9 @@ export class RestaurantResolver {
         where: {
           id,
           restaurantId,
+          restaurant: {
+            ownerId: user?.id,
+          },
         },
       });
 
@@ -321,7 +324,13 @@ export class RestaurantResolver {
       }
 
       const menuItem = await prisma.menuItem.findFirst({
-        where: { id, restaurantId },
+        where: {
+          id,
+          restaurantId,
+          restaurant: {
+            ownerId: user?.id,
+          },
+        },
       });
 
       if (!menuItem) {
@@ -338,6 +347,25 @@ export class RestaurantResolver {
       await prisma.menuItem.delete({ where: { id } });
 
       return true;
+    } catch (error: any) {
+      throw new GraphQLError(error.message, {
+        extensions: {
+          code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
+          http: {
+            status: 500,
+          },
+          originalError: error,
+        },
+      });
+    }
+  }
+  @Query(() => [MenuItem], { nullable: true })
+  async getAllMenuItems(
+    @Ctx() { prisma }: GraphQLContext
+  ): Promise<MenuItem[] | null> {
+    try {
+      const menuItems = await prisma.menuItem.findMany();
+      return menuItems?.length ? menuItems : null;
     } catch (error: any) {
       throw new GraphQLError(error.message, {
         extensions: {

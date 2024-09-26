@@ -81,12 +81,16 @@ export class DeliveryResolver {
         });
       }
 
-      const delivery = await prisma.delivery.findUnique({
-        where: { id: deliveryId },
+      const delivery = await prisma.delivery.findFirst({
+        where: {
+          id: deliveryId,
+          deliveryPerson: {
+            userId: user?.id,
+          },
+        },
       });
-
       if (!delivery) {
-        throw new GraphQLError("Delivery not found", {
+        throw new GraphQLError("Delivery not found or not authorized", {
           extensions: {
             code: "NOT_FOUND",
             http: {
