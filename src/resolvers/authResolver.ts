@@ -178,7 +178,7 @@ export class AuthResolver {
       const hashedPassword = await bcrypt.hash(password, 10);
       const updatedUser = await prisma.user.update({
         where: {
-          id: user.id,
+          id: user?.id,
         },
         data: {
           password: hashedPassword,
