@@ -58,7 +58,7 @@ export class UserResolver {
     }
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => User)
   async updateUser(
     @Ctx() { prisma, user }: GraphQLContext,
     @Arg("fullname") fullname: string,
@@ -67,7 +67,7 @@ export class UserResolver {
     @Arg("dateOfBirth") dateOfBirth: Date,
     @Arg("imageUrl", { nullable: true }) imageUrl?: string,
     @Arg("address", { nullable: true }) address?: string
-  ): Promise<boolean> {
+  ): Promise<User> {
     try {
       if (!user || !user.id) {
         throw new GraphQLError("User not authenticated", {
@@ -124,7 +124,7 @@ export class UserResolver {
         });
       }
 
-      return true;
+      return updatedUser;
     } catch (error: any) {
       throw new GraphQLError(error.message, {
         extensions: {
