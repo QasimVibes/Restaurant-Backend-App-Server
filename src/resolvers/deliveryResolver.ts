@@ -11,6 +11,7 @@ import { isAuth } from "../middleware/isAuth";
 import { GraphQLContext } from "../types/types";
 import {
   Delivery,
+  DeliveryAddress,
   DeliveryPersonStatus,
   DeliveryStatus,
 } from "../../prisma/generated/type-graphql";
@@ -135,6 +136,77 @@ export class DeliveryResolver {
       }
 
       return true;
+    } catch (error: any) {
+      throw new GraphQLError(error.message, {
+        extensions: {
+          code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
+          http: error.extensions?.http || {
+            status: 500,
+          },
+          originalError: error,
+        },
+      });
+    }
+  }
+
+  @Mutation(() => DeliveryAddress)
+  async createDeliveryAddress(
+    @Ctx() { prisma, user }: GraphQLContext,
+    @Arg("address") address: string,
+    @Arg("addressTitle") addressTitle: string
+  ): Promise<DeliveryAddress> {
+    try {
+      if (!user || !user?.id || user?.role !== "CUSTOMER") {
+        throw new GraphQLError("User not authenticated or not a customer", {
+          extensions: {
+            code: "UNAUTHORIZED",
+            http: {
+              status: 401,
+            },
+          },
+        });
+      }
+      const deliveryAddress = await prisma.deliveryAddress.create({
+        data: {
+          userId: user?.id,
+          title: addressTitle,
+          address: address,
+        },
+      });
+      return deliveryAddress;
+    } catch (error: any) {
+      throw new GraphQLError(error.message, {
+        extensions: {
+          code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
+          http: error.extensions?.http || {
+            status: 500,
+          },
+          originalError: error,
+        },
+      });
+    }
+  }
+  @Query(() => [DeliveryAddress])
+  async getDeliveryAddresses(
+    @Ctx() { prisma, user }: GraphQLContext
+  ): Promise<DeliveryAddress[]> {
+    try {
+      if (!user || !user?.id || user?.role !== "CUSTOMER") {
+        throw new GraphQLError("User not authenticated or not a customer", {
+          extensions: {
+            code: "UNAUTHORIZED",
+            http: {
+              status: 401,
+            },
+          },
+        });
+      }
+      const deliveryAddresses = await prisma.deliveryAddress.findMany({
+        where: {
+          userId: user?.id,
+        },
+      });
+      return deliveryAddresses;
     } catch (error: any) {
       throw new GraphQLError(error.message, {
         extensions: {

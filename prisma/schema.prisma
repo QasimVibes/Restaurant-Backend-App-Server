@@ -59,6 +59,8 @@ model User {
   cart              Cart?
   deliveryPerson    DeliveryPerson?   @relation("UserToDeliveryPerson")
   ownedRestaurants  Restaurant[]      @relation("RestaurantOwner")
+  reviews           Review[]
+  deliveryAddresses DeliveryAddress[]
 }
 
 model Restaurant {
@@ -73,6 +75,7 @@ model Restaurant {
   owner             User?             @relation("RestaurantOwner", fields: [ownerId], references: [id])
   ownerId           String?
   orders            Order[]
+  reviews           Review[]
 }
 
 model MenuItem {
@@ -89,6 +92,22 @@ model MenuItem {
 
   orderItems        OrderItem[]
   cartItems         CartItem[]
+  reviews           Review[]
+}
+
+model Review {
+  id                String            @id @default(cuid())
+  menuItem          MenuItem          @relation(fields: [menuItemId], references: [id])
+  menuItemId        String
+  review            String
+  rating            Int
+  createdAt         DateTime          @default(now()) 
+  updatedAt         DateTime          @updatedAt 
+
+  user              User              @relation(fields: [userId], references: [id])
+  userId            String
+  restaurant        Restaurant        @relation(fields: [restaurantId], references: [id])
+  restaurantId      String
 }
 
 
@@ -134,6 +153,15 @@ model Delivery {
   status            DeliveryStatus          @default(ASSIGNED)
   deliveryTime      DateTime
   deliveryAddress   String
+}
+
+model DeliveryAddress {
+  id                String                  @id @default(cuid())
+  user              User                    @relation(fields: [userId], references: [id])
+  userId            String
+  title             String
+  address           String
+  createdAt         DateTime                @default(now())
 }
 
 model Cart {

@@ -8,3 +8,5 @@ export { OrderItem } from "./OrderItem";
 export { Restaurant } from "./Restaurant";
 export { User } from "./User";
 export { CustomCartItemInput } from "./CustomCartItemInput";
+export { Review } from "./Review";
+export { DeliveryAddress } from "./DeliveryAddress";

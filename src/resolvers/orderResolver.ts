@@ -14,6 +14,7 @@ import {
   DeliveryPersonStatus,
   Order,
   OrderStatus,
+  Review,
 } from "../../prisma/generated/type-graphql";
 import { DeliveryStatus } from "@prisma/client";
 
@@ -218,6 +219,93 @@ export class OrderResolver {
 
       await prisma.delivery.deleteMany({ where: { orderId } });
       return true;
+    } catch (error: any) {
+      throw new GraphQLError(error.message, {
+        extensions: {
+          code: error.extensions?.code || "INTERNAL_SERVER_ERROR",
+          http: error.extensions?.http || {
+            status: 500,
+          },
+          originalError: error,
+        },
+      });
+    }
+  }
+  @Mutation(() => Review)
+  async leaveReview(
+    @Arg("menuItemId") menuItemid: string,
+    @Arg("orderId") orderId: string,
+    @Arg("review") review: string,
+    @Arg("rating") rating: number,
+    @Ctx() { prisma, user }: GraphQLContext
+  ): Promise<Review> {
+    try {
+      if (!user || !user?.id || user?.role !== "CUSTOMER") {
+        throw new GraphQLError("User not authenticated or not a customer", {
+          extensions: {
+            code: "UNAUTHORIZED",
+            http: {
+              status: 401,
+            },
+          },
+        });
+      }
+      const menuItem = await prisma.menuItem.findUnique({
+        where: { id: menuItemid },
+      });
+
+      if (!menuItem) {
+        throw new GraphQLError("MenuItem not found", {
+          extensions: {
+            code: "NOT_FOUND",
+            http: {
+              status: 404,
+            },
+          },
+        });
+      }
+      const isOrderCompleted = await prisma.order.findUnique({
+        where: { id: orderId, status: OrderStatus?.DELIVERED },
+      });
+
+      if (!isOrderCompleted) {
+        throw new GraphQLError("Your order is not completed", {
+          extensions: {
+            code: "UNAUTHORIZED",
+            http: {
+              status: 401,
+            },
+          },
+        });
+      }
+      const alreadyReviewed = await prisma.review.findFirst({
+        where: {
+          menuItemId: menuItemid,
+          userId: user?.id,
+        },
+      });
+
+      if (alreadyReviewed) {
+        throw new GraphQLError("You have already reviewed this item", {
+          extensions: {
+            code: "BAD_REQUEST",
+            http: {
+              status: 400,
+            },
+          },
+        });
+      }
+
+      const createdReview = await prisma.review.create({
+        data: {
+          menuItemId: menuItemid,
+          userId: user?.id,
+          review,
+          rating,
+          restaurantId: menuItem?.restaurantId,
+        },
+      });
+      return createdReview;
     } catch (error: any) {
       throw new GraphQLError(error.message, {
         extensions: {
